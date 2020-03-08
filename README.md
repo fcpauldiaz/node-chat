@@ -10,4 +10,4 @@ $ npm install
 $ npm start
 ```
 
-![](Mar-08-2020 12-32-52.gif)
+![](https://github.com/fcpauldiaz/node-chat/blob/master/Mar-08-2020%2012-32-52.gif)
