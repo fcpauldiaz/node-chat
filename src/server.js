@@ -30,8 +30,19 @@ server.use(helmet());
 // enable CORS - Cross Origin Resource Sharing
 server.use(cors(corsOptions));
 
+// client side main view
+server.get('/', (req, res) => {
+  res.render('index.ejs');
+});
+
+// client side chat view
+server.get('/chat', (req, res) => {
+  res.render('chat.ejs');
+});
+
+
 // mount api v1 routes
-server.use('/v1', routes);
+server.use('/api/v1', routes);
 
 server.use((err, req, res, next) => // eslint-disable-line no-unused-vars
   res.status(500).json({
