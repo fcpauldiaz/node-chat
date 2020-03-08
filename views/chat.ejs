@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font: 13px Helvetica, Arial;
+      }
+      form {
+        background: #fff;
+        padding: 3px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        border-color: #000;
+        border-top-style: solid;
+        border-top-width: 1px;
+      }
+      form input {
+        border-style: solid;
+        border-width: 1px;
+        padding: 10px;
+        width: 85%;
+        margin-right: 0.5%;
+      }
+      form button {
+        width: 9%;
+        background: rgb(130, 224, 255);
+        border: none;
+        padding: 10px;
+        margin-left: 2%;
+      }
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #messages li {
+        padding: 5px 10px;
+      }
+      #messages li:nth-child(odd) {
+        background: #eee;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+  </head>
+  <body>
+    <ul id="users"></ul>
+    <ul id="messages" style="max-height: 500px; overflow: auto"></ul>
+    <form action="/" method="POST" id="chatForm">
+      <input
+        id="txt"
+        autofocus="on"
+        placeholder="type your message"
+      /><button>Send</button>
+    </form>
+    <script>
+      const token = window.localStorage.getItem('refreshToken');
+      const socket = io.connect('http://localhost:3002', {
+        query: { token }
+      });
+      // submit text message without reload/refresh the page
+      $('form').submit(function(e) {
+        e.preventDefault(); // prevents page reloading
+        socket.emit('message', $('#txt').val());
+        $('#txt').val('');
+        var objDiv = document.getElementById("messages");
+        objDiv.scrollTop = objDiv.scrollHeight;
+        return false;
+      });
+
+      // append the chat text message
+      socket.on('message', (data) => {
+        const { user, message } = data;
+        $('#messages').append($('<li>').html('<strong>' + user + '</strong>: ' + message));
+      });
+
+      socket.on('onUserOnline', (user) => {
+        const username = '🌎 <i>' + user.email + ' is online..</i>'
+        $('#users').append($('<li>').html(username));
+      });
+
+      // check authentication to socket.
+      socket.on('onAuthenticated', (authenticated) => {
+        if (!authenticated) {
+          alert('Token invalid!');
+          // token invalid, redirect to login
+          window.location.href = '/';
+        } else {
+          alert('Authenticated!');
+        }
+      });
+    </script>
+  </body>
+</html>

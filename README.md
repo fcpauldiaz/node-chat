@@ -7,5 +7,7 @@ Run the program by using
 
 ```shell
 $ npm install
-$ npm run start
+$ npm start
 ```
+
+![](Mar-08-2020 12-32-52.gif)

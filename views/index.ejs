@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font: 13px Helvetica, Arial;
+      }
+      form {
+        text-align: center;
+        display: inline;
+      }
+      form {
+        background: #fff;
+        padding: 3px;
+        position: fixed;
+        bottom: 50%;
+        width: 100%;
+      }
+      form div {
+        border-style: solid;
+        border-width: 1px;
+        padding: 10px;
+        width: 100%;
+        margin: 0 auto;
+      }
+      form button {
+        width: 10%;
+        background: rgb(130, 224, 255);
+        border: none;
+        padding: 10px;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+  </head>
+  <body>
+    <form action="/" method="POST" id="register">
+      <div>
+        <label for="email">Email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autofocus="on"
+          placeholder="email"
+        />
+        <label for="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="password"
+        />
+        <button type="submit">Send</button>
+      </div>
+    </form>
+    <script>
+      // submit text message without reload/refresh the page
+      $('form').submit(function(e) {
+        e.preventDefault(); // prevents page reloading
+        const email = $('#email').val();
+        const password = $('#password').val();
+        // register
+        fetch('/api/v1/user/register', {
+          method: 'POST',
+          body: JSON.stringify({ email, password }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(response => {
+            //login
+            fetch('/api/v1/user/login', {
+              method: 'POST',
+              body: JSON.stringify({ email, password }),
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+              .then(r => r.json())
+              .then(r => {
+                if (r.message) {
+                  alert(r.message);
+                } else {
+                  window.localStorage.setItem('refreshToken', r.token.refreshToken);
+                  window.location.href = '/chat';
+                }
+              });
+          });
+        return false;
+      });
+    </script>
+  </body>
+</html>
